@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gift Roulette</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      background: #181818;
+      color: white;
+      margin: 0;
+      padding: 30px;
+    }
+    .button {
+      background: #00bcd4;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 18px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gift Roulette</h1>
+  <p>Tap the button below to spin the roulette for a Telegram gift!</p>
+  <button class="button" onclick="spin()">Spin for 25 Stars</button>
+
+  <script>
+    Telegram.WebApp.ready();
+
+    function spin() {
+      Telegram.WebApp.MainButton.setText("Processing...").show();
+      
+      // Отправка данных в Telegram-бота
+      setTimeout(() => {
+        Telegram.WebApp.sendData("spin_request");  // сюда мы добавим прокрутку позже
+        Telegram.WebApp.close();  // закроет WebApp после прокрутки
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
