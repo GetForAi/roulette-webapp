@@ -15,20 +15,25 @@
       margin: 0;
       padding: 0;
     }
-    #canvas {
-      margin-top: 20px;
+    #wrapper {
+      position: relative;
+      width: 400px;
+      margin: 0 auto;
     }
     #pointer {
-      width: 0; 
-      height: 0; 
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%) rotate(180deg);
+      width: 0;
+      height: 0;
       border-left: 20px solid transparent;
       border-right: 20px solid transparent;
-      border-bottom: 40px solid red;
-      position: absolute;
-      top: 120px;
-      left: 50%;
-      transform: translateX(-50%);
+      border-top: 40px solid red;
       z-index: 2;
+    }
+    canvas {
+      margin-top: 60px;
     }
     .button {
       margin-top: 30px;
@@ -48,9 +53,10 @@
 </head>
 <body>
   <h1>🎁 Telegram Gift Roulette</h1>
-  <div id="pointer"></div>
-  <canvas id="canvas" width="400" height="400"></canvas>
-
+  <div id="wrapper">
+    <div id="pointer"></div>
+    <canvas id="canvas" width="400" height="400"></canvas>
+  </div>
   <button class="button" onclick="spinWheel()">Крутить рулетку</button>
   <div id="result"></div>
 
@@ -63,19 +69,18 @@
       { text: "🎖 Медаль", value: "medal" },
       { text: "⭐ Звезда", value: "star" },
       { text: "🐰 Кролик", value: "rabbit" },
-      { text: "🌹 Роза", value: "rose" },
-      { text: "💩 Сюрприз", value: "poop" },
-      { text: "🎖 Медаль", value: "medal" }
+      { text: "🌈 Радуга", value: "rainbow" },
     ];
 
-    let theWheel = new Winwheel({
+    const theWheel = new Winwheel({
       canvasId: "canvas",
       numSegments: sectors.length,
       outerRadius: 180,
       textFontSize: 20,
-      textOrientation: 'vertical',
+      textAlignment: 'outer',
+      textMargin: 10,
       segments: sectors.map((s, i) => ({
-        fillStyle: i % 2 === 0 ? "#2c2c2c" : "#3a3a3a",
+        fillStyle: i % 2 === 0 ? "#2c2c2c" : "#444",
         text: s.text,
       })),
       animation: {
@@ -100,4 +105,5 @@
   </script>
 </body>
 </html>
+
 
