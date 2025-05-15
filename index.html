@@ -8,39 +8,68 @@
   <style>
     body {
       font-family: sans-serif;
-      text-align: center;
       background: #181818;
       color: white;
+      text-align: center;
       margin: 0;
       padding: 30px;
     }
     .button {
       background: #00bcd4;
-      padding: 15px 30px;
       border: none;
-      border-radius: 10px;
-      color: white;
+      border-radius: 12px;
+      padding: 15px 30px;
       font-size: 18px;
+      color: white;
+      cursor: pointer;
+      margin-top: 30px;
+    }
+    .result {
+      font-size: 24px;
       margin-top: 40px;
+      animation: fadeIn 1s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
     }
   </style>
 </head>
 <body>
-  <h1>Gift Roulette</h1>
-  <p>Tap the button below to spin the roulette for a Telegram gift!</p>
-  <button class="button" onclick="spin()">Spin for 25 Stars</button>
+  <h1>🎁 Gift Roulette</h1>
+  <p>Жми на кнопку, чтобы крутануть рулетку за 25 звёзд</p>
+
+  <button class="button" onclick="spin()">Крутить рулетку</button>
+
+  <div id="result" class="result"></div>
 
   <script>
     Telegram.WebApp.ready();
 
+    const prizes = [
+      { emoji: "🌹", name: "Роза", chance: 0.4 },
+      { emoji: "🎖", name: "Медаль", chance: 0.2 },
+      { emoji: "🐰", name: "Пасхальный кролик", chance: 0.15 },
+      { emoji: "⭐", name: "Красная звезда", chance: 0.05 },
+      { emoji: "💩", name: "Сюрприз", chance: 0.2 }
+    ];
+
+    function getRandomPrize() {
+      const rnd = Math.random();
+      let acc = 0;
+      for (let prize of prizes) {
+        acc += prize.chance;
+        if (rnd <= acc) return prize;
+      }
+      return prizes[0]; // fallback
+    }
+
     function spin() {
-      Telegram.WebApp.MainButton.setText("Processing...").show();
-      
-      // Отправка данных в Telegram-бота
+      document.getElementById("result").innerText = "Крутим...";
       setTimeout(() => {
-        Telegram.WebApp.sendData("spin_request");  // сюда мы добавим прокрутку позже
-        Telegram.WebApp.close();  // закроет WebApp после прокрутки
-      }, 1000);
+        const prize = getRandomPrize();
+        document.getElementById("result").innerText = `🎉 Ты выиграл: ${prize.emoji} ${prize.name}`;
+      }, 1500);
     }
   </script>
 </body>
