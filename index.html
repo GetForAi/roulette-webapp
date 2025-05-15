@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
   <title>Gift Roulette</title>
@@ -12,7 +12,27 @@
       color: white;
       text-align: center;
       margin: 0;
-      padding: 30px;
+      padding: 20px;
+    }
+    .roulette-container {
+      overflow: hidden;
+      border: 4px solid #fff;
+      border-radius: 16px;
+      width: 300px;
+      margin: 40px auto;
+      height: 80px;
+      background: #000;
+    }
+    .roulette {
+      display: flex;
+      transition: transform 3s cubic-bezier(0.33, 1, 0.68, 1);
+    }
+    .item {
+      flex: 0 0 100px;
+      font-size: 36px;
+      padding: 20px;
+      background: #222;
+      border-right: 1px solid #333;
     }
     .button {
       background: #00bcd4;
@@ -22,11 +42,10 @@
       font-size: 18px;
       color: white;
       cursor: pointer;
-      margin-top: 30px;
     }
-    .result {
+    #result {
+      margin-top: 30px;
       font-size: 24px;
-      margin-top: 40px;
       animation: fadeIn 1s ease-out;
     }
     @keyframes fadeIn {
@@ -37,11 +56,15 @@
 </head>
 <body>
   <h1>🎁 Gift Roulette</h1>
-  <p>Жми на кнопку, чтобы крутануть рулетку за 25 звёзд</p>
+  <p>Крути рулетку и выигрывай Telegram-подарки!</p>
+
+  <div class="roulette-container">
+    <div class="roulette" id="roulette"></div>
+  </div>
 
   <button class="button" onclick="spin()">Крутить рулетку</button>
 
-  <div id="result" class="result"></div>
+  <div id="result"></div>
 
   <script>
     Telegram.WebApp.ready();
@@ -49,10 +72,26 @@
     const prizes = [
       { emoji: "🌹", name: "Роза", chance: 0.4 },
       { emoji: "🎖", name: "Медаль", chance: 0.2 },
-      { emoji: "🐰", name: "Пасхальный кролик", chance: 0.15 },
+      { emoji: "🐰", name: "Кролик", chance: 0.15 },
       { emoji: "⭐", name: "Красная звезда", chance: 0.05 },
       { emoji: "💩", name: "Сюрприз", chance: 0.2 }
     ];
+
+    const roulette = document.getElementById("roulette");
+    const result = document.getElementById("result");
+
+    // Удваиваем массив для прокрутки
+    const visiblePrizes = [...prizes, ...prizes, ...prizes];
+
+    function render() {
+      roulette.innerHTML = "";
+      visiblePrizes.forEach(p => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.textContent = p.emoji;
+        roulette.appendChild(div);
+      });
+    }
 
     function getRandomPrize() {
       const rnd = Math.random();
@@ -61,16 +100,33 @@
         acc += prize.chance;
         if (rnd <= acc) return prize;
       }
-      return prizes[0]; // fallback
+      return prizes[0];
     }
 
     function spin() {
-      document.getElementById("result").innerText = "Крутим...";
+      result.innerText = "";
+      const prize = getRandomPrize();
+
+      // Найдём индекс для остановки
+      const index = visiblePrizes.findIndex(p => p.name === prize.name);
+      const offset = (index + prizes.length * 2) * 100; // смещение в px
+
+      roulette.style.transition = "none";
+      roulette.style.transform = "translateX(0)";
+      void roulette.offsetWidth; // перезапуск layout
+
       setTimeout(() => {
-        const prize = getRandomPrize();
-        document.getElementById("result").innerText = `🎉 Ты выиграл: ${prize.emoji} ${prize.name}`;
-      }, 1500);
+        roulette.style.transition = "transform 3s cubic-bezier(0.33, 1, 0.68, 1)";
+        roulette.style.transform = `translateX(-${offset}px)`;
+      }, 50);
+
+      setTimeout(() => {
+        result.innerText = `🎉 Ты выиграл: ${prize.emoji} ${prize.name}`;
+      }, 3200);
     }
+
+    render();
   </script>
 </body>
 </html>
+
