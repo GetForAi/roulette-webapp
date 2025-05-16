@@ -21,14 +21,14 @@
     }
     #pointer {
       position: absolute;
-      top: -10px;
+      top: -20px;
       left: 50%;
       transform: translateX(-50%);
       width: 0;
       height: 0;
       border-left: 20px solid transparent;
       border-right: 20px solid transparent;
-      border-bottom: 40px solid red;
+      border-top: 40px solid red;
       z-index: 2;
     }
     canvas {
@@ -110,8 +110,8 @@
 
     function displayPrize() {
       const segmentAngle = 360 / theWheel.numSegments;
-      const finalRotation = theWheel.rotationAngle % 360;
-      const index = Math.floor(((360 - finalRotation + segmentAngle / 2) % 360) / segmentAngle);
+      const adjustedAngle = (theWheel.rotationAngle + 90) % 360;
+      const index = Math.floor(adjustedAngle / segmentAngle);
       const segment = theWheel.segments[index >= 0 ? index : 0];
       lastWinningSegment = segment;
       document.getElementById("result").innerText = `🎉 Ты выиграл: ${segment.text}`;
@@ -145,6 +145,9 @@
           ctx.moveTo(centerX, centerY);
           ctx.arc(centerX, centerY, this.outerRadius, angle, angle + arcSize);
           ctx.fill();
+          ctx.strokeStyle = "#ffffff55";
+          ctx.lineWidth = 1;
+          ctx.stroke();
           ctx.save();
           ctx.translate(centerX, centerY);
           ctx.rotate(angle + arcSize / 2);
