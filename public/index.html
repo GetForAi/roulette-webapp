@@ -126,6 +126,84 @@
       document.getElementById("result").innerText = `🎉 Ты выиграл: ${indicatedSegment.text}`;
       isSpinning = false;
     }
-  </script>
+  <script>
+  Telegram.WebApp.ready();
+
+  let balanceCoins = 100;
+  let isSpinning = false;
+
+  const balanceEl = document.getElementById("balance");
+  const resultEl = document.getElementById("result");
+
+  function updateBalanceDisplay() {
+    balanceEl.innerText = `💰 Баланс: ${balanceCoins} монет`;
+  }
+
+  updateBalanceDisplay();
+
+  const wheel = new Winwheel({
+    'canvasId': 'canvas',
+    'numSegments': 6,
+    'segments': [
+      { 'fillStyle': '#bdc3c7', 'text': '🎁 Базовый подарок (серый)' },
+      { 'fillStyle': '#3498db', 'text': '🎁 Редкий подарок (синий)' },
+      { 'fillStyle': '#9b59b6', 'text': '🎁 Эпик подарок (фиолетовый)' },
+      { 'fillStyle': '#f39c12', 'text': '💸 0.1 TON' },
+      { 'fillStyle': '#2ecc71', 'text': '🪙 +10 монет' },
+      { 'fillStyle': '#7f8c8d', 'text': '🙁 Пусто' }
+    ],
+    'animation': {
+      'type': 'spinToStop',
+      'duration': 5,
+      'spins': 8,
+      'callbackFinished': function () {
+        const segment = wheel.getIndicatedSegment();
+        showResult(segment.text);
+        isSpinning = false;
+      }
+    }
+  });
+
+  function showResult(text) {
+    resultEl.innerText = `🎉 Ты выиграл: ${text}`;
+
+    // Бонус монет за сектор
+    if (text.includes("+10 монет")) {
+      balanceCoins += 10;
+    }
+
+    updateBalanceDisplay();
+  }
+
+  function spinWheel() {
+    if (isSpinning) return;
+
+    // Здесь будет логика проверки звёзд (позже)
+    isSpinning = true;
+    startWheel();
+  }
+
+  function spinWithCoins() {
+    if (isSpinning) return;
+
+    if (balanceCoins >= 25) {
+      balanceCoins -= 25;
+      updateBalanceDisplay();
+      isSpinning = true;
+      startWheel();
+    } else {
+      resultEl.innerText = "❌ Недостаточно монет!";
+    }
+  }
+
+  function startWheel() {
+    wheel.stopAnimation(false);
+    wheel.rotationAngle = 0;
+    wheel.draw();
+    wheel.startAnimation();
+  }
+</script>
+
+
 </body>
 </html>
