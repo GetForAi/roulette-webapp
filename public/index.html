@@ -5,7 +5,7 @@
   <title>Gift Roulette</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/zarocknz/javascript-winwheel/Winwheel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/zarocknz/javascript-winwheel@latest/Winwheel.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <style>
     body {
@@ -26,12 +26,12 @@
       position: absolute;
       top: -20px;
       left: 50%;
-      transform: translateX(-50%) rotate(0deg);
+      transform: translateX(-50%) rotate(180deg);
       width: 0;
       height: 0;
       border-left: 20px solid transparent;
       border-right: 20px solid transparent;
-      border-top: 40px solid red;
+      border-bottom: 40px solid red;
       z-index: 2;
     }
     canvas {
@@ -75,7 +75,18 @@
 
   <script>
     Telegram.WebApp.ready();
-    fetchBalance();
+
+    let balanceCoins = 100;
+    let isSpinning = false;
+
+    const balanceEl = document.getElementById("balance");
+    const resultEl = document.getElementById("result");
+
+    function updateBalanceDisplay() {
+      balanceEl.innerText = `💰 Баланс: ${balanceCoins} монет`;
+    }
+
+    updateBalanceDisplay();
 
     const wheel = new Winwheel({
       'canvasId': 'canvas',
@@ -92,118 +103,49 @@
         'type': 'spinToStop',
         'duration': 5,
         'spins': 8,
-        'callbackFinished': displayResult
+        'callbackFinished': function () {
+          const segment = wheel.getIndicatedSegment();
+          showResult(segment.text);
+          isSpinning = false;
+        }
       }
     });
 
-    let isSpinning = false;
+    function showResult(text) {
+      resultEl.innerText = `🎉 Ты выиграл: ${text}`;
 
-    function fetchBalance() {
-      document.getElementById("balance").innerText = `💰 Баланс: 100 монет`;
+      if (text.includes("+10 монет")) {
+        balanceCoins += 10;
+      }
+
+      updateBalanceDisplay();
     }
 
     function spinWheel() {
-      if (!isSpinning) {
-        isSpinning = true;
-        wheel.stopAnimation(false);
-        wheel.rotationAngle = 0;
-        wheel.draw();
-        wheel.startAnimation();
-      }
+      if (isSpinning) return;
+      isSpinning = true;
+      startWheel();
     }
 
     function spinWithCoins() {
-      if (!isSpinning) {
+      if (isSpinning) return;
+
+      if (balanceCoins >= 25) {
+        balanceCoins -= 25;
+        updateBalanceDisplay();
         isSpinning = true;
-        wheel.stopAnimation(false);
-        wheel.rotationAngle = 0;
-        wheel.draw();
-        wheel.startAnimation();
+        startWheel();
+      } else {
+        resultEl.innerText = "❌ Недостаточно монет!";
       }
     }
 
-    function displayResult(indicatedSegment) {
-      document.getElementById("result").innerText = `🎉 Ты выиграл: ${indicatedSegment.text}`;
-      isSpinning = false;
+    function startWheel() {
+      wheel.stopAnimation(false);
+      wheel.rotationAngle = 0;
+      wheel.draw();
+      wheel.startAnimation();
     }
-  <script>
-  Telegram.WebApp.ready();
-
-  let balanceCoins = 100;
-  let isSpinning = false;
-
-  const balanceEl = document.getElementById("balance");
-  const resultEl = document.getElementById("result");
-
-  function updateBalanceDisplay() {
-    balanceEl.innerText = `💰 Баланс: ${balanceCoins} монет`;
-  }
-
-  updateBalanceDisplay();
-
-  const wheel = new Winwheel({
-    'canvasId': 'canvas',
-    'numSegments': 6,
-    'segments': [
-      { 'fillStyle': '#bdc3c7', 'text': '🎁 Базовый подарок (серый)' },
-      { 'fillStyle': '#3498db', 'text': '🎁 Редкий подарок (синий)' },
-      { 'fillStyle': '#9b59b6', 'text': '🎁 Эпик подарок (фиолетовый)' },
-      { 'fillStyle': '#f39c12', 'text': '💸 0.1 TON' },
-      { 'fillStyle': '#2ecc71', 'text': '🪙 +10 монет' },
-      { 'fillStyle': '#7f8c8d', 'text': '🙁 Пусто' }
-    ],
-    'animation': {
-      'type': 'spinToStop',
-      'duration': 5,
-      'spins': 8,
-      'callbackFinished': function () {
-        const segment = wheel.getIndicatedSegment();
-        showResult(segment.text);
-        isSpinning = false;
-      }
-    }
-  });
-
-  function showResult(text) {
-    resultEl.innerText = `🎉 Ты выиграл: ${text}`;
-
-    // Бонус монет за сектор
-    if (text.includes("+10 монет")) {
-      balanceCoins += 10;
-    }
-
-    updateBalanceDisplay();
-  }
-
-  function spinWheel() {
-    if (isSpinning) return;
-
-    // Здесь будет логика проверки звёзд (позже)
-    isSpinning = true;
-    startWheel();
-  }
-
-  function spinWithCoins() {
-    if (isSpinning) return;
-
-    if (balanceCoins >= 25) {
-      balanceCoins -= 25;
-      updateBalanceDisplay();
-      isSpinning = true;
-      startWheel();
-    } else {
-      resultEl.innerText = "❌ Недостаточно монет!";
-    }
-  }
-
-  function startWheel() {
-    wheel.stopAnimation(false);
-    wheel.rotationAngle = 0;
-    wheel.draw();
-    wheel.startAnimation();
-  }
-</script>
-
-
+  </script>
 </body>
 </html>
