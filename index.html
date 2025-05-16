@@ -66,6 +66,7 @@
 
     let theWheel;
     let gifts = [];
+    let lastWinningSegment = null;
 
     fetch('gifts.json')
       .then(response => response.json())
@@ -86,9 +87,9 @@
         canvasId: "canvas",
         numSegments: segments.length,
         outerRadius: 180,
-        textFontSize: 20,
-        textAlignment: 'outer',
-        textMargin: 10,
+        textFontSize: 16,
+        textAlignment: 'inner',
+        textMargin: 60,
         segments: segments,
         animation: {
           type: "spinToStop",
@@ -107,7 +108,12 @@
       theWheel.startAnimation();
     }
 
-    function displayPrize(segment) {
+    function displayPrize() {
+      const segmentAngle = 360 / theWheel.numSegments;
+      const finalRotation = theWheel.rotationAngle % 360;
+      const index = Math.floor(((360 - finalRotation + segmentAngle / 2) % 360) / segmentAngle);
+      const segment = theWheel.segments[index >= 0 ? index : 0];
+      lastWinningSegment = segment;
       document.getElementById("result").innerText = `🎉 Ты выиграл: ${segment.text}`;
     }
 
@@ -117,6 +123,7 @@
         this.numSegments = options.numSegments;
         this.outerRadius = options.outerRadius;
         this.textFontSize = options.textFontSize;
+        this.textMargin = options.textMargin || 10;
         this.segments = options.segments;
         this.animation = options.animation;
         this.rotationAngle = 0;
@@ -143,7 +150,8 @@
           ctx.rotate(angle + arcSize / 2);
           ctx.fillStyle = "white";
           ctx.font = `${this.textFontSize}px sans-serif`;
-          ctx.fillText(this.segments[i].text, this.outerRadius - 60, 10);
+          ctx.textAlign = "right";
+          ctx.fillText(this.segments[i].text, this.outerRadius - this.textMargin, 10);
           ctx.restore();
         }
       }
@@ -164,11 +172,9 @@
             requestAnimationFrame(animate);
           } else {
             this.rotationAngle = this.rotationAngle % 360;
-            const winningIndex = this.numSegments - Math.floor(this.rotationAngle / (360 / this.numSegments)) - 1;
-            const segment = this.segments[winningIndex >= 0 ? winningIndex : 0];
             this.spinning = false;
             if (this.animation.callbackFinished) {
-              this.animation.callbackFinished(segment);
+              this.animation.callbackFinished();
             }
           }
         };
