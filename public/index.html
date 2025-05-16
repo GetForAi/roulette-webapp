@@ -5,6 +5,7 @@
   <title>Gift Roulette</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="Winwheel.min.js"></script>
   <style>
     body {
       background: #181818;
@@ -75,26 +76,39 @@
     Telegram.WebApp.ready();
     fetchBalance();
 
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-
-    function drawPlaceholderWheel() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#333';
-      ctx.beginPath();
-      ctx.arc(200, 200, 180, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#fff';
-      ctx.font = '20px sans-serif';
-      ctx.fillText('Загрузка колеса...', 100, 210);
-    }
-
-    drawPlaceholderWheel();
+    const wheel = new Winwheel({
+      'canvasId': 'canvas',
+      'numSegments': 6,
+      'segments': [
+        { 'fillStyle': '#bdc3c7', 'text': '🎁 Базовый подарок (серый)' },
+        { 'fillStyle': '#3498db', 'text': '🎁 Редкий подарок (синий)' },
+        { 'fillStyle': '#9b59b6', 'text': '🎁 Эпик подарок (фиолетовый)' },
+        { 'fillStyle': '#f39c12', 'text': '💸 0.1 TON' },
+        { 'fillStyle': '#2ecc71', 'text': '🪙 +10 монет' },
+        { 'fillStyle': '#7f8c8d', 'text': '🙁 Пусто' }
+      ],
+      'animation': {
+        'type': 'spinToStop',
+        'duration': 5,
+        'spins': 8,
+        'callbackFinished': displayResult
+      }
+    });
 
     function fetchBalance() {
-      // тестовая заглушка
       document.getElementById("balance").innerText = `💰 Баланс: 100 монет`;
+    }
+
+    function spinWheel() {
+      wheel.startAnimation();
+    }
+
+    function spinWithCoins() {
+      wheel.startAnimation();
+    }
+
+    function displayResult(indicatedSegment) {
+      document.getElementById("result").innerText = `🎉 Ты выиграл: ${indicatedSegment.text}`;
     }
   </script>
 </body>
