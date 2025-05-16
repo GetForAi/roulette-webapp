@@ -1,0 +1,26 @@
+[
+  {
+    "id": "rose",
+    "name": "Роза",
+    "emoji": "🌹",
+    "image": "gifts/rose.png",
+    "chance": 0.3,
+    "available": 7
+  },
+  {
+    "id": "medal",
+    "name": "Медаль",
+    "emoji": "🎖",
+    "image": "gifts/medal.png",
+    "chance": 0.2,
+    "available": 3
+  },
+  {
+    "id": "star",
+    "name": "Звезда",
+    "emoji": "⭐",
+    "image": "gifts/star.png",
+    "chance": 0.1,
+    "available": 1
+  }
+]
