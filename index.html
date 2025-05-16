@@ -76,7 +76,7 @@
       }
     }
 
-    fetch('gifts.json')
+    fetch('/gifts.json') // ✅ для public/
       .then(res => res.json())
       .then(data => {
         sectors = data.map((item, i) => ({
