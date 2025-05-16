@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
   <title>Gift Roulette</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
   <style>
     body {
       background: #181818;
@@ -65,10 +63,54 @@
 
   <script>
     Telegram.WebApp.ready();
-  </script>
 
-  <script>
-    // === ВСТРОЕННЫЙ Winwheel.js (упрощённый для краткости, вставим кусок функционала) ===
+    let theWheel;
+    let gifts = [];
+
+    fetch('gifts.json')
+      .then(response => response.json())
+      .then(data => {
+        gifts = data.filter(gift => gift.available > 0);
+        buildWheel(gifts);
+      });
+
+    function buildWheel(gifts) {
+      const segments = gifts.map((gift, i) => ({
+        fillStyle: i % 2 === 0 ? "#2c2c2c" : "#444",
+        text: `${gift.emoji} ${gift.name}`,
+        id: gift.id,
+        chance: gift.chance
+      }));
+
+      theWheel = new Winwheel({
+        canvasId: "canvas",
+        numSegments: segments.length,
+        outerRadius: 180,
+        textFontSize: 20,
+        textAlignment: 'outer',
+        textMargin: 10,
+        segments: segments,
+        animation: {
+          type: "spinToStop",
+          duration: 5,
+          spins: 6,
+          callbackFinished: displayPrize
+        }
+      });
+    }
+
+    function spinWheel() {
+      document.getElementById("result").innerText = "";
+      theWheel.stopAnimation();
+      theWheel.rotationAngle = 0;
+      theWheel.draw();
+      theWheel.startAnimation();
+    }
+
+    function displayPrize(segment) {
+      document.getElementById("result").innerText = `🎉 Ты выиграл: ${segment.text}`;
+    }
+
     class Winwheel {
       constructor(options) {
         this.canvasId = options.canvasId;
@@ -135,46 +177,6 @@
       stopAnimation() {
         this.spinning = false;
       }
-    }
-  </script>
-
-  <script>
-    const sectors = [
-      { text: "🌹 Роза", value: "rose" },
-      { text: "💩 Сюрприз", value: "poop" },
-      { text: "🎖 Медаль", value: "medal" },
-      { text: "⭐ Звезда", value: "star" },
-      { text: "🐰 Кролик", value: "rabbit" },
-      { text: "🌈 Радуга", value: "rainbow" },
-    ];
-
-    const theWheel = new Winwheel({
-      canvasId: "canvas",
-      numSegments: sectors.length,
-      outerRadius: 180,
-      textFontSize: 20,
-      segments: sectors.map((s, i) => ({
-        fillStyle: i % 2 === 0 ? "#2c2c2c" : "#444",
-        text: s.text
-      })),
-      animation: {
-        type: "spinToStop",
-        duration: 5,
-        spins: 6,
-        callbackFinished: displayPrize
-      }
-    });
-
-    function spinWheel() {
-      document.getElementById("result").innerText = "";
-      theWheel.stopAnimation();
-      theWheel.rotationAngle = 0;
-      theWheel.draw();
-      theWheel.startAnimation();
-    }
-
-    function displayPrize(segment) {
-      document.getElementById("result").innerText = `🎉 Ты выиграл: ${segment.text}`;
     }
   </script>
 </body>
