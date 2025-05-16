@@ -18,23 +18,23 @@
       position: relative;
       width: 100%;
       max-width: 400px;
-      margin: 0 auto;
+      margin: 100px auto 0 auto;
     }
     #pointer {
       position: absolute;
-      top: 200px;
+      top: -20px;
       left: 50%;
-      transform: translateX(-50%) rotate(180deg);
+      transform: translateX(-50%) rotate(0deg);
       width: 0;
       height: 0;
       border-left: 20px solid transparent;
       border-right: 20px solid transparent;
-      border-bottom: 40px solid red;
+      border-top: 40px solid red;
       z-index: 2;
     }
     canvas {
       display: block;
-      margin: 120px auto 0 auto;
+      margin: 0 auto;
     }
     .button {
       margin-top: 20px;
@@ -71,11 +71,31 @@
   <button class="button" onclick="spinWithCoins()">Крутить за монеты</button>
   <div id="result"></div>
 
-  <!-- Скрипт тот же -->
   <script>
     Telegram.WebApp.ready();
     fetchBalance();
-    // Остальной скрипт остаётся без изменений
+
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function drawPlaceholderWheel() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#333';
+      ctx.beginPath();
+      ctx.arc(200, 200, 180, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#fff';
+      ctx.font = '20px sans-serif';
+      ctx.fillText('Загрузка колеса...', 100, 210);
+    }
+
+    drawPlaceholderWheel();
+
+    function fetchBalance() {
+      // тестовая заглушка
+      document.getElementById("balance").innerText = `💰 Баланс: 100 монет`;
+    }
   </script>
 </body>
 </html>
