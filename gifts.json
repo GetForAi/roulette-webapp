@@ -1,8 +1,0 @@
-[
-  { "id": "basic", "label": "🎁 Простой подарок", "type": "basic", "chance": 0.3 },
-  { "id": "rare", "label": "💎 Редкий подарок", "type": "rare", "chance": 0.2 },
-  { "id": "epic", "label": "👑 Эпик подарок", "type": "epic", "chance": 0.1 },
-  { "id": "ton", "label": "💰 0.1 TON", "type": "ton", "chance": 0.05 },
-  { "id": "stars", "label": "⭐ 50 монет", "type": "stars", "chance": 0.05 },
-  { "id": "empty", "label": "🙈 Пусто", "type": "empty", "chance": 0.3 }
-]
