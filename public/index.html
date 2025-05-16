@@ -63,6 +63,7 @@
     Telegram.WebApp.ready();
     let theWheel;
     let sectors = [];
+    let userId = Telegram.WebApp.initDataUnsafe.user?.id || null;
 
     function getColorByType(type) {
       switch (type) {
@@ -140,6 +141,16 @@
         default: resultText = `🎉 Ты выиграл: ${finalPrize}`;
       }
       document.getElementById("result").innerText = resultText;
+
+      // Отправка данных в бэкенд (бота)
+      const payload = {
+        user_id: userId,
+        prize_id: sector.id,
+        prize_label: finalPrize,
+        type: sector.type
+      };
+
+      Telegram.WebApp.sendData(JSON.stringify(payload));
     }
 
     class Winwheel {
