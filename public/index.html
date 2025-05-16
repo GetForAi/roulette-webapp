@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/zarocknz/javascript-winwheel/Winwheel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <style>
     body {
       background: #181818;
@@ -95,20 +96,35 @@
       }
     });
 
+    let isSpinning = false;
+
     function fetchBalance() {
       document.getElementById("balance").innerText = `💰 Баланс: 100 монет`;
     }
 
     function spinWheel() {
-      wheel.startAnimation();
+      if (!isSpinning) {
+        isSpinning = true;
+        wheel.stopAnimation(false);
+        wheel.rotationAngle = 0;
+        wheel.draw();
+        wheel.startAnimation();
+      }
     }
 
     function spinWithCoins() {
-      wheel.startAnimation();
+      if (!isSpinning) {
+        isSpinning = true;
+        wheel.stopAnimation(false);
+        wheel.rotationAngle = 0;
+        wheel.draw();
+        wheel.startAnimation();
+      }
     }
 
     function displayResult(indicatedSegment) {
       document.getElementById("result").innerText = `🎉 Ты выиграл: ${indicatedSegment.text}`;
+      isSpinning = false;
     }
   </script>
 </body>
