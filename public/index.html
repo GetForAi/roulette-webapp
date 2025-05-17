@@ -138,6 +138,10 @@
     const wheel = new Winwheel({
       'canvasId': 'canvas',
       'numSegments': 6,
+      'outerRadius': 180,
+      'textFontSize': 16,
+      'textAlignment': 'outer',
+      'textMargin': 20,
       'segments': [
         { 'fillStyle': '#bdc3c7', 'text': '🎁 Базовый подарок (серый)' },
         { 'fillStyle': '#3498db', 'text': '🎁 Редкий подарок (синий)' },
@@ -148,14 +152,12 @@
       ],
       'animation': {
         'type': 'spinToStop',
-        'duration': 5,
-        'spins': 5,
+        'duration': 6,
+        'spins': 8,
+        'easing': 'easeOut',
         'callbackFinished': function (segment) {
           showResult(segment.text);
           isSpinning = false;
-        },
-        'callbackAfter': function () {
-          wheel.draw(); // отрисовка во время вращения
         }
       }
     });
@@ -171,7 +173,10 @@
     function spinWheel() {
       if (isSpinning) return;
       isSpinning = true;
-      startWheel();
+      wheel.stopAnimation(false);
+      wheel.rotationAngle = 0;
+      wheel.draw();
+      wheel.startAnimation();
     }
 
     function spinWithCoins() {
@@ -180,19 +185,13 @@
         balanceCoins -= 25;
         updateBalanceDisplay();
         isSpinning = true;
-        startWheel();
+        wheel.stopAnimation(false);
+        wheel.rotationAngle = 0;
+        wheel.draw();
+        wheel.startAnimation();
       } else {
         resultEl.innerText = "❌ Недостаточно монет!";
       }
-    }
-
-    function startWheel() {
-      const stopAt = Math.floor(Math.random() * 360);
-      wheel.animation.stopAngle = stopAt;
-      wheel.stopAnimation(false);
-      wheel.rotationAngle = 0;
-      wheel.draw();
-      wheel.startAnimation();
     }
 
     function switchTab(tabId) {
