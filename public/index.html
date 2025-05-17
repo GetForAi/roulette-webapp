@@ -74,9 +74,10 @@
   </style>
 </head>
 <body>
+  <div id="balance">💰 Баланс: 0</div> <!-- Это элемент для баланса -->
 
-  <!-- Вкладка "Колесо" -->
   <div id="tab-roulette" class="tab">
+    <!-- Контент вкладки "Колесо" -->
     <h1>Колесо</h1>
     <div id="wrapper">
       <div id="pointer"></div>
@@ -87,38 +88,20 @@
     <div id="result"></div>
   </div>
 
-  <!-- Вкладка "Розыгрыш" -->
-  <div id="tab-giveaway" class="tab">
-    <h1>Розыгрыш</h1>
-    <p>Розыгрыш скоро! Ожидайте обновлений.</p>
-  </div>
-
-  <!-- Вкладка "Меню" -->
-  <div id="tab-menu" class="tab">
-    <h1>Меню</h1>
-    <button class="button">Подключить Wallet</button>
-    <button class="button">Поддержка</button>
-    <button class="button">Правила</button>
-  </div>
-
-  <!-- Нижнее меню с кнопками для переключения вкладок -->
-  <div id="bottom-menu">
-    <button onclick="switchTab('tab-roulette')">Колесо</button>
-    <button onclick="switchTab('tab-giveaway')">Розыгрыш</button>
-    <button onclick="switchTab('tab-menu')">Меню</button>
-  </div>
-
   <script>
     Telegram.WebApp.ready();
 
-    let balanceCoins = 100;  // Начальный баланс
+    // Инициализация баланса
+    let balanceCoins = 100;
     let isSpinning = false;
-    const balanceEl = document.getElementById("balance");
+    const balanceEl = document.getElementById("balance");  // Проверяем, что элемент найден
     const resultEl = document.getElementById("result");
 
-    // Функция для обновления отображения баланса
+    // Обновляем отображение баланса
     function updateBalanceDisplay() {
-      balanceEl.innerText = `💰 Баланс: ${balanceCoins} монет`;
+      if (balanceEl) { // Если элемент существует
+        balanceEl.innerText = `💰 Баланс: ${balanceCoins} монет`;
+      }
     }
 
     updateBalanceDisplay();  // Изначально обновим баланс
@@ -198,4 +181,4 @@
   </script>
 
 </body>
-</html>
+
