@@ -107,12 +107,14 @@
     const balanceEl = document.getElementById("balance");
     const resultEl = document.getElementById("result");
 
+    // Функция для обновления отображения баланса
     function updateBalanceDisplay() {
       balanceEl.innerText = `💰 Баланс: ${balanceCoins} монет`;
     }
 
     updateBalanceDisplay(); // Изначально обновим баланс
 
+    // Инициализация Winwheel (колесо)
     const wheel = new Winwheel({
       'canvasId': 'canvas',
       'numSegments': 6,
@@ -136,6 +138,7 @@
       }
     });
 
+    // Функция для показа результата выигрыша
     function showResult(text) {
       resultEl.innerText = `🎉 Ты выиграл: ${text}`;
 
@@ -146,25 +149,28 @@
       updateBalanceDisplay();
     }
 
+    // Функция для прокрутки колеса за звезды
     function spinWheel() {
       if (isSpinning) return;
       isSpinning = true;
       startWheel();
     }
 
+    // Функция для прокрутки колеса за монеты
     function spinWithCoins() {
       if (isSpinning) return;
 
       if (balanceCoins >= 25) {
-        balanceCoins -= 25;
+        balanceCoins -= 25; // Вычитаем 25 монет за прокрутку
         updateBalanceDisplay();
         isSpinning = true;
         startWheel();
       } else {
-        resultEl.innerText = "❌ Недостаточно монет!";
+        resultEl.innerText = "❌ Недостаточно монет!"; // Если не хватает монет
       }
     }
 
+    // Функция для старта колеса
     function startWheel() {
       wheel.stopAnimation(false);
       wheel.rotationAngle = 0;
@@ -172,11 +178,12 @@
       wheel.startAnimation();
     }
 
+    // Функция для переключения вкладок
     function switchTab(tabId) {
       document.querySelectorAll('.tab').forEach(t => t.style.display = 'none');
       document.getElementById(tabId).style.display = 'block';
     }
-    switchTab('tab-roulette'); // Изначально показываем вкладку "Колесо"
+    switchTab('tab-roulette');  // Изначально показываем вкладку "Колесо"
   </script>
 
 </body>
