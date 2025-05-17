@@ -109,7 +109,7 @@
 
     updateBalanceDisplay();
 
-    // Загружаем список подарков
+    // Загружаем gifts.json
     fetch('./gifts.json')
       .then(res => res.json())
       .then(data => {
@@ -178,11 +178,11 @@
       const randomGift = gifts[rarity][Math.floor(Math.random() * gifts[rarity].length)];
       resultEl.innerHTML = `🎉 Ты выиграл: <br><strong>${randomGift.name}</strong><br><img src="${randomGift.image}" alt="gift">`;
 
-      // Отправка сообщения через бота
-      const BOT_TOKEN = "7029624754:AAFo7XzVzO5mnUKuF9oZAgBOfPFyk6u57OM";  // ← сюда вставишь свой токен
-      const chatId = Telegram.WebApp.initDataUnsafe?.user?.id;
+      // Отправка Telegram-сообщения
+      const BOT_TOKEN = "BOT_TOKEN_HERE"; // ← сюда вставь свой токен
+      const chatId = 458343275; // ← твой Telegram user_id
 
-      if (chatId && BOT_TOKEN !== "BOT_TOKEN_HERE") {
+      if (BOT_TOKEN !== "BOT_TOKEN_HERE") {
         fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -190,9 +190,15 @@
             chat_id: chatId,
             text: `🎁 Вы выиграли подарок: ${randomGift.name}`
           })
-        }).then(res => console.log("Подарок отправлен:", res.status));
+        })
+        .then(res => {
+          console.log("Подарок отправлен:", res.status);
+        })
+        .catch(err => {
+          console.error("Ошибка при отправке подарка:", err);
+        });
       } else {
-        console.warn("Chat ID или токен не указан — подарок не отправлен");
+        console.warn("Токен не указан — подарок не отправлен");
       }
     }
 
