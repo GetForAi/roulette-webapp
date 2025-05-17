@@ -16,168 +16,198 @@
       margin: 0;
       padding: 0;
     }
+
     .tab {
       display: none;
-      padding-top: 60px;
+      padding-top: 40px;
+      padding-bottom: 100px; /* чтобы не наезжало на меню */
     }
+
     #bottom-menu {
       position: fixed;
-      bottom: 0; width: 100%;
-      background: #333; padding: 10px 0;
-      display: flex; justify-content: space-around;
+      bottom: 0;
+      width: 100%;
+      background: #333;
+      padding: 10px 0;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 10;
     }
+
     #bottom-menu button {
-      background: transparent; border: none;
-      color: white; font-size: 18px;
-    }
-    .button {
-      margin-top: 20px; background: #00bcd4;
-      border: none; border-radius: 10px;
-      padding: 15px 30px; color: white;
+      background: transparent;
+      border: none;
+      color: white;
       font-size: 18px;
+      cursor: pointer;
     }
+
+    .button {
+      margin-top: 20px;
+      background: #00bcd4;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 24px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
     #result {
       margin-top: 20px;
-      font-size: 22px;
+      font-size: 20px;
       color: #00ffcc;
     }
+
     #balance {
-      position: fixed; top: 10px; right: 15px;
-      font-size: 16px; background: #222;
-      padding: 6px 12px; border-radius: 8px;
+      position: fixed;
+      top: 10px;
+      right: 15px;
+      font-size: 16px;
+      background: #222;
+      padding: 6px 12px;
+      border-radius: 8px;
     }
+
     #pointer {
-      width: 0; height: 0;
+      width: 0;
+      height: 0;
       border-left: 15px solid transparent;
       border-right: 15px solid transparent;
       border-top: 20px solid red;
       margin: 0 auto 10px;
     }
+
     canvas {
       background: transparent;
-      margin: 0 auto; display: block;
+      margin: 0 auto;
+      display: block;
     }
   </style>
 </head>
 <body>
 
-<div id="balance">Баланс: 0 монет</div>
+  <div id="balance">Баланс: 0 монет</div>
 
-<div id="tab-roulette" class="tab">
-  <h1>Колесо</h1>
-  <div id="wrapper">
-    <div id="pointer"></div>
-    <canvas id="canvas" width="400" height="400"></canvas>
+  <div id="tab-roulette" class="tab">
+    <h1>Колесо</h1>
+    <div id="wrapper" style="margin-bottom: 10px;">
+      <div id="pointer"></div>
+      <canvas id="canvas" width="350" height="350"></canvas>
+    </div>
+    <button class="button" onclick="spinWheel()">Крутить за звезды</button>
+    <button class="button" onclick="spinWithCoins()">Крутить за монеты</button>
+    <div id="result"></div>
   </div>
-  <button class="button" onclick="spinWheel()">Крутить за звезды</button>
-  <button class="button" onclick="spinWithCoins()">Крутить за монеты</button>
-  <div id="result"></div>
-</div>
 
-<div id="tab-giveaway" class="tab">
-  <h1>Розыгрыш</h1>
-  <p>Розыгрыш скоро! Ожидайте обновлений.</p>
-</div>
+  <div id="tab-giveaway" class="tab">
+    <h1>Розыгрыш</h1>
+    <p>Розыгрыш скоро! Ожидайте обновлений.</p>
+  </div>
 
-<div id="tab-menu" class="tab">
-  <h1>Меню</h1>
-  <button class="button">Подключить Wallet</button>
-  <button class="button">Поддержка</button>
-  <button class="button">Правила</button>
-</div>
+  <div id="tab-menu" class="tab">
+    <h1>Меню</h1>
+    <button class="button">Подключить Wallet</button>
+    <button class="button">Поддержка</button>
+    <button class="button">Правила</button>
+  </div>
 
-<div id="bottom-menu">
-  <button onclick="switchTab('tab-roulette')">Колесо</button>
-  <button onclick="switchTab('tab-giveaway')">Розыгрыш</button>
-  <button onclick="switchTab('tab-menu')">Меню</button>
-</div>
+  <div id="bottom-menu">
+    <button onclick="switchTab('tab-roulette')">Колесо</button>
+    <button onclick="switchTab('tab-giveaway')">Розыгрыш</button>
+    <button onclick="switchTab('tab-menu')">Меню</button>
+  </div>
 
-<script>
-  Telegram.WebApp.ready();
+  <script>
+    Telegram.WebApp.ready();
 
-  let balanceCoins = 100;
-  let isSpinning = false;
-  const balanceEl = document.getElementById("balance");
-  const resultEl = document.getElementById("result");
+    let balanceCoins = 100;
+    let isSpinning = false;
+    const balanceEl = document.getElementById("balance");
+    const resultEl = document.getElementById("result");
 
-  function updateBalanceDisplay() {
-    balanceEl.innerText = `💰 Баланс: ${balanceCoins} монет`;
-  }
-
-  updateBalanceDisplay();
-
-  const wheel = new Winwheel({
-    'canvasId': 'canvas',
-    'numSegments': 6,
-    'outerRadius': 180,
-    'textFontSize': 16,
-    'textAlignment': 'outer',
-    'textMargin': 20,
-    'segments': [
-      { 'fillStyle': '#bdc3c7', 'text': '🎁 Базовый подарок' },
-      { 'fillStyle': '#3498db', 'text': '🎁 Редкий подарок' },
-      { 'fillStyle': '#9b59b6', 'text': '🎁 Эпик подарок' },
-      { 'fillStyle': '#f39c12', 'text': '💸 0.1 TON' },
-      { 'fillStyle': '#2ecc71', 'text': '🪙 +10 монет' },
-      { 'fillStyle': '#7f8c8d', 'text': '🙁 Пусто' }
-    ],
-    'animation': {
-      'type': 'spinToStop',
-      'duration': 6,
-      'spins': 8,
-      'easing': 'Power3.easeOut',
-      'callbackFinished': function (segment) {
-        if (segment && segment.text) {
-          showResult(segment.text);
-        } else {
-          showResult("❓ Не удалось определить приз");
-        }
-        isSpinning = false;
-      }
+    function updateBalanceDisplay() {
+      balanceEl.innerText = `💰 Баланс: ${balanceCoins} монет`;
     }
-  });
 
-  function showResult(text) {
-    const el = document.getElementById("result");
-    if (el) {
-      el.innerText = `🎉 Ты выиграл: ${text}`;
-    }
-    if (text.includes("+10 монет")) {
-      balanceCoins += 10;
-    }
     updateBalanceDisplay();
-  }
 
-  function spinWheel() {
-    if (isSpinning) return;
-    isSpinning = true;
-    wheel.stopAnimation(false);
-    wheel.rotationAngle = 0;
-    wheel.draw();
-    wheel.startAnimation();
-  }
+    const wheel = new Winwheel({
+      'canvasId': 'canvas',
+      'numSegments': 6,
+      'outerRadius': 150, // МЕНЬШЕ РАДИУС
+      'textFontSize': 14,
+      'textAlignment': 'outer',
+      'textMargin': 20,
+      'segments': [
+        { 'fillStyle': '#bdc3c7', 'text': '🎁 Базовый подарок' },
+        { 'fillStyle': '#3498db', 'text': '🎁 Редкий подарок' },
+        { 'fillStyle': '#9b59b6', 'text': '🎁 Эпик подарок' },
+        { 'fillStyle': '#f39c12', 'text': '💸 0.1 TON' },
+        { 'fillStyle': '#2ecc71', 'text': '🪙 +10 монет' },
+        { 'fillStyle': '#7f8c8d', 'text': '🙁 Пусто' }
+      ],
+      'animation': {
+        'type': 'spinToStop',
+        'duration': 6,
+        'spins': 8,
+        'easing': 'Power3.easeOut',
+        'callbackFinished': function (segment) {
+          if (segment && segment.text) {
+            showResult(segment.text);
+          } else {
+            showResult("❓ Не удалось определить приз");
+          }
+          isSpinning = false;
+        }
+      }
+    });
 
-  function spinWithCoins() {
-    if (isSpinning) return;
-    if (balanceCoins >= 25) {
-      balanceCoins -= 25;
+    function showResult(text) {
+      const el = document.getElementById("result");
+      if (el) {
+        el.innerText = `🎉 Ты выиграл: ${text}`;
+      }
+      if (text.includes("+10 монет")) {
+        balanceCoins += 10;
+      }
       updateBalanceDisplay();
+    }
+
+    function spinWheel() {
+      if (isSpinning) return;
       isSpinning = true;
       wheel.stopAnimation(false);
       wheel.rotationAngle = 0;
       wheel.draw();
       wheel.startAnimation();
-    } else {
-      resultEl.innerText = "❌ Недостаточно монет!";
     }
-  }
 
-  function switchTab(tabId) {
-    document.querySelectorAll('.tab').forEach(t => t.style.display = 'none');
-    document.getElementById(tabId).style.display = 'block';
-  }
+    function spinWithCoins() {
+      if (isSpinning) return;
+      if (balanceCoins >= 25) {
+        balanceCoins -= 25;
+        updateBalanceDisplay();
+        isSpinning = true;
+        wheel.stopAnimation(false);
+        wheel.rotationAngle = 0;
+        wheel.draw();
+        wheel.startAnimation();
+      } else {
+        resultEl.innerText = "❌ Недостаточно монет!";
+      }
+    }
 
-  switchTab('tab-roulette');
-</script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab').forEach(t => t.style.display = 'none');
+      document.getElementById(tabId).style.display = 'block';
+    }
+
+    switchTab('tab-roulette');
+  </script>
 </body>
 </html>
