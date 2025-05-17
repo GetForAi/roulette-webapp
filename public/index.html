@@ -11,6 +11,34 @@
 <script src="public/gifts/Winwheel.min.js"></script>
 <script>
   console.log('Winwheel.js загружен!');
+
+  // Теперь убедимся, что колесо рисуется после загрузки страницы
+  window.onload = function() {
+    const wheel = new Winwheel({
+      'canvasId': 'canvas',
+      'numSegments': 6,
+      'segments': [
+        { 'fillStyle': '#bdc3c7', 'text': '🎁 Базовый подарок' },
+        { 'fillStyle': '#3498db', 'text': '🎁 Редкий подарок' },
+        { 'fillStyle': '#9b59b6', 'text': '🎁 Эпик подарок' },
+        { 'fillStyle': '#f39c12', 'text': '💸 0.1 TON' },
+        { 'fillStyle': '#2ecc71', 'text': '🪙 +10 монет' },
+        { 'fillStyle': '#7f8c8d', 'text': '🙁 Пусто' }
+      ],
+      'animation': {
+        'type': 'spinToStop',
+        'duration': 5,
+        'spins': 8,
+        'callbackFinished': function () {
+          const segment = wheel.getIndicatedSegment();
+          console.log('Выиграл: ', segment.text);
+        }
+      }
+    });
+    
+    // Проверим, рисует ли колесо
+    wheel.draw();
+  };
 </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <style>
