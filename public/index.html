@@ -109,7 +109,7 @@
 
     updateBalanceDisplay();
 
-    // Загружаем gifts.json
+    // Загружаем список подарков
     fetch('./gifts.json')
       .then(res => res.json())
       .then(data => {
@@ -178,7 +178,22 @@
       const randomGift = gifts[rarity][Math.floor(Math.random() * gifts[rarity].length)];
       resultEl.innerHTML = `🎉 Ты выиграл: <br><strong>${randomGift.name}</strong><br><img src="${randomGift.image}" alt="gift">`;
 
-      // Здесь в будущем: отправка подарка через Telegram Bot API
+      // Отправка сообщения через бота
+      const BOT_TOKEN = "BOT_TOKEN_HERE";  // ← сюда вставишь свой токен
+      const chatId = Telegram.WebApp.initDataUnsafe?.user?.id;
+
+      if (chatId && BOT_TOKEN !== "BOT_TOKEN_HERE") {
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: `🎁 Вы выиграли подарок: ${randomGift.name}`
+          })
+        }).then(res => console.log("Подарок отправлен:", res.status));
+      } else {
+        console.warn("Chat ID или токен не указан — подарок не отправлен");
+      }
     }
 
     function showResult(text) {
