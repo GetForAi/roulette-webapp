@@ -100,85 +100,93 @@
     <button onclick="switchTab('tab-menu')">Меню</button>
   </div>
 
-  <script>
-    Telegram.WebApp.ready();
+ <script>
+  Telegram.WebApp.ready();
 
-    let balanceCoins = 100;
-    let isSpinning = false;
-    const balanceEl = document.getElementById("balance");
-    const resultEl = document.getElementById("result");
+  let balanceCoins = 100; // Начальный баланс
+  let isSpinning = false;
 
-    function updateBalanceDisplay() {
-      balanceEl.innerText = `💰 Баланс: ${balanceCoins} монет`;
+  // Элементы для отображения баланса и результата
+  const balanceEl = document.getElementById("balance");
+  const resultEl = document.getElementById("result");
+
+  // Функция для обновления отображения баланса
+  function updateBalanceDisplay() {
+    balanceEl.innerText = `💰 Баланс: ${balanceCoins} монет`;
+  }
+
+  updateBalanceDisplay(); // Изначально обновим баланс
+
+  // Инициализация Winwheel (колесо)
+  const wheel = new Winwheel({
+    'canvasId': 'canvas',
+    'numSegments': 6,
+    'segments': [
+      { 'fillStyle': '#bdc3c7', 'text': '🎁 Базовый подарок (серый)' },
+      { 'fillStyle': '#3498db', 'text': '🎁 Редкий подарок (синий)' },
+      { 'fillStyle': '#9b59b6', 'text': '🎁 Эпик подарок (фиолетовый)' },
+      { 'fillStyle': '#f39c12', 'text': '💸 0.1 TON' },
+      { 'fillStyle': '#2ecc71', 'text': '🪙 +10 монет' },
+      { 'fillStyle': '#7f8c8d', 'text': '🙁 Пусто' }
+    ],
+    'animation': {
+      'type': 'spinToStop',
+      'duration': 5,
+      'spins': 8,
+      'callbackFinished': function () {
+        const segment = wheel.getIndicatedSegment();
+        showResult(segment.text);
+        isSpinning = false;
+      }
+    }
+  });
+
+  // Функция для показа результата выигрыша
+  function showResult(text) {
+    resultEl.innerText = `🎉 Ты выиграл: ${text}`;
+
+    // Если выпали монеты, увеличиваем баланс
+    if (text.includes("+10 монет")) {
+      balanceCoins += 10;
     }
 
-    updateBalanceDisplay();
+    updateBalanceDisplay(); // Обновляем баланс
+  }
 
-    const wheel = new Winwheel({
-      'canvasId': 'canvas',
-      'numSegments': 6,
-      'segments': [
-        { 'fillStyle': '#bdc3c7', 'text': '🎁 Базовый подарок (серый)' },
-        { 'fillStyle': '#3498db', 'text': '🎁 Редкий подарок (синий)' },
-        { 'fillStyle': '#9b59b6', 'text': '🎁 Эпик подарок (фиолетовый)' },
-        { 'fillStyle': '#f39c12', 'text': '💸 0.1 TON' },
-        { 'fillStyle': '#2ecc71', 'text': '🪙 +10 монет' },
-        { 'fillStyle': '#7f8c8d', 'text': '🙁 Пусто' }
-      ],
-      'animation': {
-        'type': 'spinToStop',
-        'duration': 5,
-        'spins': 8,
-        'callbackFinished': function () {
-          const segment = wheel.getIndicatedSegment();
-          showResult(segment.text);
-          isSpinning = false;
-        }
-      }
-    });
+  // Функция для прокрутки колеса за звезды
+  function spinWheel() {
+    if (isSpinning) return; // Если уже крутится, не запускаем снова
+    isSpinning = true;
+    startWheel(); // Запускаем анимацию
+  }
 
-    function showResult(text) {
-      resultEl.innerText = `🎉 Ты выиграл: ${text}`;
+  // Функция для прокрутки колеса за монеты
+  function spinWithCoins() {
+    if (isSpinning) return; // Если уже крутится, не запускаем снова
 
-      if (text.includes("+10 монет")) {
-        balanceCoins += 10;
-      }
-
+    if (balanceCoins >= 25) {
+      balanceCoins -= 25; // Вычитаем 25 монет за прокрутку
       updateBalanceDisplay();
-    }
-
-    function spinWheel() {
-      if (isSpinning) return;
       isSpinning = true;
-      startWheel();
+      startWheel(); // Запускаем анимацию
+    } else {
+      resultEl.innerText = "❌ Недостаточно монет!"; // Если не хватает монет
     }
+  }
 
-    function spinWithCoins() {
-      if (isSpinning) return;
+  // Функция для старта колеса
+  function startWheel() {
+    wheel.stopAnimation(false);
+    wheel.rotationAngle = 0;
+    wheel.draw();
+    wheel.startAnimation();
+  }
 
-      if (balanceCoins >= 25) {
-        balanceCoins -= 25;
-        updateBalanceDisplay();
-        isSpinning = true;
-        startWheel();
-      } else {
-        resultEl.innerText = "❌ Недостаточно монет!";
-      }
-    }
+  // Функция для переключения вкладок
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab').forEach(t => t.style.display = 'none');
+    document.getElementById(tabId).style.display = 'block';
+  }
 
-    function startWheel() {
-      wheel.stopAnimation(false);
-      wheel.rotationAngle = 0;
-      wheel.draw();
-      wheel.startAnimation();
-    }
-
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab').forEach(t => t.style.display = 'none');
-      document.getElementById(tabId).style.display = 'block';
-    }
-    switchTab('tab-roulette');  // Изначально показываем вкладку "Колесо"
-  </script>
-
-</body>
-</html>
+  switchTab('tab-roulette'); // Изначально показываем вкладку "Колесо"
+</script>
