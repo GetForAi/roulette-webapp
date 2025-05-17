@@ -80,7 +80,7 @@
     }
 
     canvas {
-      background: #fff;
+      background: transparent;
       margin: 0 auto;
       display: block;
     }
@@ -90,7 +90,6 @@
 
   <div id="balance">Баланс: 0 монет</div>
 
-  <!-- Вкладка "Колесо" -->
   <div id="tab-roulette" class="tab">
     <h1>Колесо</h1>
     <div id="wrapper">
@@ -102,13 +101,11 @@
     <div id="result"></div>
   </div>
 
-  <!-- Вкладка "Розыгрыш" -->
   <div id="tab-giveaway" class="tab">
     <h1>Розыгрыш</h1>
     <p>Розыгрыш скоро! Ожидайте обновлений.</p>
   </div>
 
-  <!-- Вкладка "Меню" -->
   <div id="tab-menu" class="tab">
     <h1>Меню</h1>
     <button class="button">Подключить Wallet</button>
@@ -116,7 +113,6 @@
     <button class="button">Правила</button>
   </div>
 
-  <!-- Нижнее меню с кнопками для переключения вкладок -->
   <div id="bottom-menu">
     <button onclick="switchTab('tab-roulette')">Колесо</button>
     <button onclick="switchTab('tab-giveaway')">Розыгрыш</button>
@@ -139,20 +135,6 @@
 
     updateBalanceDisplay();
 
-    // Проверка canvas
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-
-    // ВРЕМЕННО: рисуем просто круг для проверки
-    ctx.beginPath();
-    ctx.arc(200, 200, 150, 0, Math.PI * 2);
-    ctx.fillStyle = "orange";
-    ctx.fill();
-
-    console.log("canvas:", canvas);
-    console.log("ctx:", ctx);
-    console.log("Winwheel:", typeof Winwheel);
-
     const wheel = new Winwheel({
       'canvasId': 'canvas',
       'numSegments': 6,
@@ -167,10 +149,13 @@
       'animation': {
         'type': 'spinToStop',
         'duration': 5,
-        'spins': 8,
+        'spins': 5,
         'callbackFinished': function (segment) {
           showResult(segment.text);
           isSpinning = false;
+        },
+        'callbackAfter': function () {
+          wheel.draw(); // отрисовка во время вращения
         }
       }
     });
@@ -202,7 +187,9 @@
     }
 
     function startWheel() {
-      wheel.stopAnimation();
+      const stopAt = Math.floor(Math.random() * 360);
+      wheel.animation.stopAngle = stopAt;
+      wheel.stopAnimation(false);
       wheel.rotationAngle = 0;
       wheel.draw();
       wheel.startAnimation();
