@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Gift Roulette</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
- <script src="https://cdn.jsdelivr.net/npm/winwheel@2.5.0/dist/Winwheel.min.js"></script>
-</script>
+  <script src="https://cdn.jsdelivr.net/npm/winwheel@2.5.0/dist/Winwheel.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <style>
     body {
@@ -20,6 +19,7 @@
 
     .tab {
       display: none;
+      padding-top: 60px;
     }
 
     #bottom-menu {
@@ -61,14 +61,28 @@
     }
 
     #balance {
-      position: absolute;
+      position: fixed;
       top: 10px;
       right: 15px;
       font-size: 16px;
+      background: #222;
+      padding: 6px 12px;
+      border-radius: 8px;
+    }
+
+    #pointer {
+      width: 0;
+      height: 0;
+      border-left: 15px solid transparent;
+      border-right: 15px solid transparent;
+      border-bottom: 20px solid red;
+      margin: 0 auto 10px;
     }
   </style>
 </head>
 <body>
+
+  <div id="balance">Баланс: 0 монет</div>
 
   <!-- Вкладка "Колесо" -->
   <div id="tab-roulette" class="tab">
@@ -106,21 +120,19 @@
   <script>
     Telegram.WebApp.ready();
 
-    let balanceCoins = 100;  // Начальный баланс
+    let balanceCoins = 100;
     let isSpinning = false;
-    const balanceEl = document.getElementById("balance");  // Элемент для баланса
+    const balanceEl = document.getElementById("balance");
     const resultEl = document.getElementById("result");
 
-    // Функция для обновления отображения баланса
     function updateBalanceDisplay() {
       if (balanceEl) {
         balanceEl.innerText = `💰 Баланс: ${balanceCoins} монет`;
       }
     }
 
-    updateBalanceDisplay();  // Изначально обновим баланс
+    updateBalanceDisplay();
 
-    // Инициализация Winwheel (колесо)
     const wheel = new Winwheel({
       'canvasId': 'canvas',
       'numSegments': 6,
@@ -144,30 +156,24 @@
       }
     });
 
-    // Функция для показа результата выигрыша
     function showResult(text) {
       resultEl.innerText = `🎉 Ты выиграл: ${text}`;
-
       if (text.includes("+10 монет")) {
         balanceCoins += 10;
       }
-
       updateBalanceDisplay();
     }
 
-    // Функция для прокрутки колеса за звезды
     function spinWheel() {
       if (isSpinning) return;
       isSpinning = true;
       startWheel();
     }
 
-    // Функция для прокрутки колеса за монеты
     function spinWithCoins() {
       if (isSpinning) return;
-
       if (balanceCoins >= 25) {
-        balanceCoins -= 25; // Вычитаем 25 монет за прокрутку
+        balanceCoins -= 25;
         updateBalanceDisplay();
         isSpinning = true;
         startWheel();
@@ -176,7 +182,6 @@
       }
     }
 
-    // Функция для старта колеса
     function startWheel() {
       wheel.stopAnimation(false);
       wheel.rotationAngle = 0;
@@ -184,15 +189,12 @@
       wheel.startAnimation();
     }
 
-    // Функция для переключения вкладок
     function switchTab(tabId) {
       document.querySelectorAll('.tab').forEach(t => t.style.display = 'none');
       document.getElementById(tabId).style.display = 'block';
     }
 
-    // Переход на вкладку "Колесо" при загрузке страницы
     switchTab('tab-roulette');
   </script>
-
 </body>
 </html>
