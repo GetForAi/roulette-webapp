@@ -16,7 +16,10 @@
       margin: 0;
       padding: 0;
     }
-    .tab { display: none; padding-top: 60px; }
+    .tab {
+      display: none;
+      padding-top: 60px;
+    }
     #bottom-menu {
       position: fixed;
       bottom: 0; width: 100%;
@@ -33,7 +36,11 @@
       padding: 15px 30px; color: white;
       font-size: 18px;
     }
-    #result { margin-top: 20px; font-size: 22px; }
+    #result {
+      margin-top: 20px;
+      font-size: 22px;
+      color: #00ffcc;
+    }
     #balance {
       position: fixed; top: 10px; right: 15px;
       font-size: 16px; background: #222;
@@ -120,14 +127,21 @@
       'spins': 8,
       'easing': 'Power3.easeOut',
       'callbackFinished': function (segment) {
-        showResult(segment.text);
+        if (segment && segment.text) {
+          showResult(segment.text);
+        } else {
+          showResult("❓ Не удалось определить приз");
+        }
         isSpinning = false;
       }
     }
   });
 
   function showResult(text) {
-    resultEl.innerText = `🎉 Ты выиграл: ${text}`;
+    const el = document.getElementById("result");
+    if (el) {
+      el.innerText = `🎉 Ты выиграл: ${text}`;
+    }
     if (text.includes("+10 монет")) {
       balanceCoins += 10;
     }
