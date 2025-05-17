@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Gift Roulette</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/winwheel@2.5.0/dist/Winwheel.min.js"></script> <!-- Подключаем Winwheel.js -->
+  <script src="public/gifts/Winwheel.min.js"></script> <!-- Подключение JS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <style>
     body {
@@ -17,12 +17,10 @@
       padding: 0;
     }
 
-    /* Общие стили для всех вкладок */
     .tab {
       display: none;
     }
 
-    /* Нижнее меню с иконками */
     #bottom-menu {
       position: fixed;
       bottom: 0;
@@ -42,7 +40,6 @@
       cursor: pointer;
     }
 
-    /* Кнопки */
     .button {
       margin-top: 20px;
       background: #00bcd4;
@@ -110,12 +107,14 @@
 
     let balanceCoins = 100;  // Начальный баланс
     let isSpinning = false;
-    const balanceEl = document.getElementById("balance");
+    const balanceEl = document.getElementById("balance");  // Элемент для баланса
     const resultEl = document.getElementById("result");
 
     // Функция для обновления отображения баланса
     function updateBalanceDisplay() {
-      balanceEl.innerText = `💰 Баланс: ${balanceCoins} монет`;
+      if (balanceEl) {
+        balanceEl.innerText = `💰 Баланс: ${balanceCoins} монет`;
+      }
     }
 
     updateBalanceDisplay();  // Изначально обновим баланс
